@@ -1,0 +1,45 @@
+﻿@model WebProje.Models.Kullanici
+
+@{
+    ViewData["Title"] = "Profiliniz";
+}
+
+<div class="container py-5">
+    <h2 class="mb-4">Profiliniz</h2>
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success">@ViewBag.Message</div>
+    }
+
+    <form method="post">
+        <div class="mb-3">
+            <label for="Ad" class="form-label">Ad</label>
+            <input type="text" class="form-control" id="Ad" name="Ad" value="@Model.Ad" required>
+        </div>
+        <div class="mb-3">
+            <label for="Soyad" class="form-label">Soyad</label>
+            <input type="text" class="form-control" id="Soyad" name="Soyad" value="@Model.Soyad" required>
+        </div>
+        <div class="mb-3">
+            <label for="Email" class="form-label">E-posta</label>
+            <input type="email" class="form-control" id="Email" name="Email" value="@Model.Email" required>
+        </div>
+        <button type="submit" class="btn btn-primary mb-3">Bilgileri Güncelle</button>
+    </form>
+
+    <hr />
+
+    <h4>Şifre Değiştir</h4>
+    <form method="post" action="/Profil/SifreDegistir">
+        <div class="mb-3">
+            <label for="EskiSifre" class="form-label">Eski Şifre</label>
+            <input type="password" class="form-control" id="EskiSifre" name="eskiSifre" required>
+        </div>
+        <div class="mb-3">
+            <label for="YeniSifre" class="form-label">Yeni Şifre</label>
+            <input type="password" class="form-control" id="YeniSifre" name="yeniSifre" required>
+        </div>
+        <button type="submit" class="btn btn-secondary">Şifreyi Değiştir</button>
+    </form>
+</div>
