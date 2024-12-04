@@ -6,11 +6,11 @@ namespace WebProje.Controllers
     public class LoginController : BaseController
     {
         private readonly KuaforContext _context;
-
-        public LoginController(KuaforContext context)
+        public LoginController(KuaforContext context) : base(context)
         {
             _context = context;
         }
+       
 
         public IActionResult Index()
         {

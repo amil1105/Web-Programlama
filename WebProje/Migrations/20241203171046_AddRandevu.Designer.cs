@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebProje.Models;
 
@@ -11,9 +12,10 @@ using WebProje.Models;
 namespace WebProje.Migrations
 {
     [DbContext(typeof(KuaforContext))]
-    partial class KuaforContextModelSnapshot : ModelSnapshot
+    [Migration("20241203171046_AddRandevu")]
+    partial class AddRandevu
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,19 +36,16 @@ namespace WebProje.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Adres")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("MagazaId")
+                    b.Property<int>("MagazaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Soyad")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("Telefon")
-                        .HasColumnType("bigint");
+                    b.Property<string>("UygunlukSaatleri")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UzmanlikAlanlari")
                         .IsRequired()
@@ -179,15 +178,19 @@ namespace WebProje.Migrations
 
             modelBuilder.Entity("WebProje.Models.Calisan", b =>
                 {
-                    b.HasOne("WebProje.Models.Magaza", null)
+                    b.HasOne("WebProje.Models.Magaza", "Magaza")
                         .WithMany("Calisanlar")
-                        .HasForeignKey("MagazaId");
+                        .HasForeignKey("MagazaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Magaza");
                 });
 
             modelBuilder.Entity("WebProje.Models.Randevu", b =>
                 {
                     b.HasOne("WebProje.Models.Calisan", "Calisan")
-                        .WithMany()
+                        .WithMany("Randevular")
                         .HasForeignKey("CalisanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -201,6 +204,11 @@ namespace WebProje.Migrations
                     b.Navigation("Calisan");
 
                     b.Navigation("Islem");
+                });
+
+            modelBuilder.Entity("WebProje.Models.Calisan", b =>
+                {
+                    b.Navigation("Randevular");
                 });
 
             modelBuilder.Entity("WebProje.Models.Magaza", b =>

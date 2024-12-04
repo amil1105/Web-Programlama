@@ -3,17 +3,34 @@
 }
 
 <div class="container py-5">
-    <h2 class="mb-4">Admin Panel</h2>
-
-    <div class="list-group">
-        <a href="/Admin/MagazaEkle" class="list-group-item list-group-item-action">
-            <strong>Mağaza Ekle</strong> - Yeni mağaza bilgisi ekleyin.
-        </a>
-        <a href="/Admin/CalisanEkle" class="list-group-item list-group-item-action">
-            <strong>Çalışan Ekle</strong> - Yeni çalışan bilgisi ekleyin.
-        </a>
-        <a href="/Admin/IslemEkle" class="list-group-item list-group-item-action">
-            <strong>İşlem Ekle</strong> - Yeni işlem ve fiyat ekleyin.
-        </a>
+    <h2>Admin Panel</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Mağaza Ayarları</h5>
+                    <p class="card-text">Mağaza bilgilerini düzenleyin.</p>
+                    <a href="/Admin/MagazaAyar" class="btn btn-primary">Düzenle</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Çalışan Yönetimi</h5>
+                    <p class="card-text">Çalışanları yönetin.</p>
+                    <a href="/Admin/CalisanListesi" class="btn btn-primary">Yönet</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">İşlem Yönetimi</h5>
+                    <p class="card-text">İşlemleri yönetin.</p>
+                    <a href="/Admin/IslemListesi" class="btn btn-primary">Yönet</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

@@ -1,0 +1,22 @@
+﻿@model WebProje.Models.Calisan
+
+<div class="container py-5">
+    <h2>Çalışan Güncelle</h2>
+    <form method="post">
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <div class="mb-3">
+            <label for="Ad" class="form-label">Ad</label>
+            <input type="text" class="form-control" id="Ad" name="Ad" value="@Model.Ad" required>
+        </div>
+        <div class="mb-3">
+            <label for="Soyad" class="form-label">Soyad</label>
+            <input type="text" class="form-control" id="Soyad" name="Soyad" value="@Model.Soyad" required>
+        </div>
+        <div class="mb-3">
+            <label for="UzmanlikAlanlari" class="form-label">Uzmanlık Alanları</label>
+            <input type="text" class="form-control" id="UzmanlikAlanlari" name="UzmanlikAlanlari" value="@Model.UzmanlikAlanlari" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+        <a href="/Admin/CalisanListesi" class="btn btn-secondary">İptal</a>
+    </form>
+</div>

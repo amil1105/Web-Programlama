@@ -8,10 +8,11 @@ namespace WebProje.Controllers
     {
         private readonly KuaforContext _context;
 
-        public ProfilController(KuaforContext context)
+        public ProfilController(KuaforContext context) : base(context)
         {
             _context = context;
         }
+       
 
         // Kullanıcı profilini görüntüleme
         [HttpGet]

@@ -7,7 +7,7 @@ namespace WebProje.Controllers
     {
         private readonly KuaforContext _context;
 
-        public RegisterController(KuaforContext context)
+        public RegisterController(KuaforContext context) : base(context)
         {
             _context = context;
         }

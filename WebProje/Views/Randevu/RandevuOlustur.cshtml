@@ -1,0 +1,50 @@
+﻿@model WebProje.Models.Randevu
+
+<div class="container py-5">
+    <h2>Randevu Oluştur</h2>
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+    }
+
+    <form method="post">
+        <!-- Çalışan Seçimi -->
+        <div class="mb-3">
+            <label for="CalisanId" class="form-label">Çalışan</label>
+            <select id="CalisanId" name="CalisanId" class="form-control" required>
+                <option value="">Seçiniz</option>
+                @foreach (var calisan in ViewBag.Calisanlar)
+                {
+                    <option value="@calisan.Id">@calisan.Ad @calisan.Soyad</option>
+                }
+            </select>
+        </div>
+
+        <!-- İşlem Seçimi -->
+        <div class="mb-3">
+            <label for="IslemId" class="form-label">İşlem</label>
+            <select id="IslemId" name="IslemId" class="form-control" required>
+                <option value="">Seçiniz</option>
+                @foreach (var islem in ViewBag.Islemler)
+                {
+                    <option value="@islem.Id">@islem.Ad (@islem.Ucret ₺, @islem.Sure dakika)</option>
+                }
+            </select>
+        </div>
+
+        <!-- Tarih -->
+        <div class="mb-3">
+            <label for="Tarih" class="form-label">Tarih</label>
+            <input type="date" id="Tarih" name="Tarih" class="form-control" required>
+        </div>
+
+        <!-- Saat -->
+        <div class="mb-3">
+            <label for="Saat" class="form-label">Saat</label>
+            <input type="time" id="Saat" name="Saat" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Randevu Oluştur</button>
+    </form>
+</div>
