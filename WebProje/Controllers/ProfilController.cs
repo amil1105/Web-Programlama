@@ -33,7 +33,6 @@ namespace WebProje.Controllers
             return View(kullanici);
         }
 
-        // Kullanıcı bilgilerini düzenleme
         [HttpPost]
         public IActionResult Index(Kullanici guncelKullanici)
         {
@@ -53,6 +52,7 @@ namespace WebProje.Controllers
                     kullanici.Ad = guncelKullanici.Ad;
                     kullanici.Soyad = guncelKullanici.Soyad;
                     kullanici.Email = guncelKullanici.Email;
+                    kullanici.Telefon = guncelKullanici.Telefon;
                     _context.SaveChanges();
                 }
 

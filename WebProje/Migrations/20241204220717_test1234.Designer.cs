@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebProje.Models;
 
@@ -11,9 +12,10 @@ using WebProje.Models;
 namespace WebProje.Migrations
 {
     [DbContext(typeof(KuaforContext))]
-    partial class KuaforContextModelSnapshot : ModelSnapshot
+    [Migration("20241204220717_test1234")]
+    partial class test1234
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,10 +110,6 @@ namespace WebProje.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Soyad")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Telefon")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

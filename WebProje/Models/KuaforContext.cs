@@ -11,5 +11,9 @@ namespace WebProje.Models
         public DbSet<Magaza> Magazalar { get; set; }
         public DbSet<Islem> Islemler { get; set; }
         public DbSet<Randevu> Randevular { get; set; }
+
+       
     }
+
+
 }

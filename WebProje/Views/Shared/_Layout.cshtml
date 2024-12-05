@@ -74,10 +74,16 @@
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Profil" asp-action="Index">Profil</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Randevu" asp-action="Randevularim">Randevularım</a>
+                            </li>
                             @if (ViewData["UserRole"]?.ToString() == "Admin")
                             {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">Admin Panel</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Randevu" asp-action="TumRandevular">Tüm Randevular</a>
                                 </li>
                             }
                           

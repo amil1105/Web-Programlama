@@ -23,7 +23,6 @@ namespace WebProje.Controllers
         {
             if (ModelState.IsValid)
             {
-                // E-posta kontrolü
                 var mevcutKullanici = _context.Kullanicilar.FirstOrDefault(k => k.Email == kullanici.Email);
                 if (mevcutKullanici != null)
                 {
@@ -31,11 +30,16 @@ namespace WebProje.Controllers
                     return View(kullanici);
                 }
 
-                // Yeni kullanıcıyı veritabanına ekle
+                var mevcutKullanici2 = _context.Kullanicilar.FirstOrDefault(k => k.Telefon == kullanici.Telefon);
+                if (mevcutKullanici != null)
+                {
+                    ViewBag.ErrorMessage = "Bu Telefon No zaten kayıtlı.";
+                    return View(kullanici);
+                }
+
                 _context.Kullanicilar.Add(kullanici);
                 _context.SaveChanges();
 
-                // Kayıt sonrası giriş sayfasına yönlendirme
                 return RedirectToAction("Index", "Login");
             }
 

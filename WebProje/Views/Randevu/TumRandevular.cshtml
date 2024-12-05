@@ -1,0 +1,36 @@
+﻿@model IEnumerable<WebProje.Models.RandevuViewModel>
+
+<div class="container py-5">
+    <h2>Tüm Randevular</h2>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Çalışan</th>
+                <th>İşlem</th>
+                <th>Tarih</th>
+                <th>Saat</th>
+                <th>Kullanıcı Ad Soyad</th>
+                <th>Kullanıcı Telefon</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var randevu in Model)
+            {
+                <tr>
+                    <td>@randevu.CalisanAdSoyad</td>
+                    <td>@randevu.IslemAd</td>
+                    <td>@randevu.Tarih.ToShortDateString()</td>
+                    <td>@randevu.Saat</td>
+                    <td>@randevu.KullaniciAdSoyad</td>
+                    <td>@randevu.KullaniciTelefon</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -9,6 +9,7 @@
                 <th>Tarih</th>
                 <th>Saat</th>
                 <th>Çalışan</th>
+                <th>Çalışan Tel No</th>
                 <th>İşlem</th>
                 <th>Ücret</th>
             </tr>
@@ -20,6 +21,7 @@
                     <td>@randevu.Tarih.ToShortDateString()</td>
                     <td>@randevu.Saat</td>
                     <td>@randevu.Calisan.Ad @randevu.Calisan.Soyad</td>
+                    <td>@randevu.Calisan.Telefon</td>
                     <td>@randevu.Islem.Ad</td>
                     <td>@randevu.Islem.Ucret ₺</td>
                 </tr>

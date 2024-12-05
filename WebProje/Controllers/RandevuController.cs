@@ -15,7 +15,6 @@ namespace WebProje.Controllers
             ViewBag.Islemler = _context.Islemler.ToList();
             return View();
         }
-
         [HttpPost]
         public IActionResult RandevuOlustur(Randevu randevu)
         {
@@ -32,23 +31,35 @@ namespace WebProje.Controllers
             // Kullanıcı ID'sini modele ekle
             randevu.KullaniciId = userId;
 
-            // Model doğrulama kontrolü
-            if (!ModelState.IsValid)
+            //if (!ModelState.IsValid)
+            //{
+            //    ViewBag.Calisanlar = _context.Calisanlar.ToList();
+            //    ViewBag.Islemler = _context.Islemler.ToList();
+
+            //    // ModelState hatalarını ekrana yazdır
+            //    ViewBag.ErrorMessage = string.Join("<br>", ModelState.Values
+            //        .SelectMany(v => v.Errors)
+            //        .Select(e => e.ErrorMessage));
+
+            //    return View(randevu);
+            //}
+
+            // Çakışan randevu kontrolü
+            bool isConflict = _context.Randevular.Any(r =>
+                r.CalisanId == randevu.CalisanId &&
+                r.Tarih == randevu.Tarih &&
+                r.Saat == randevu.Saat);
+
+            if (isConflict)
             {
                 ViewBag.Calisanlar = _context.Calisanlar.ToList();
                 ViewBag.Islemler = _context.Islemler.ToList();
-
-                // Hata mesajlarını topla
-                ViewBag.ErrorMessage = string.Join("<br>", ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage));
-
+                ViewBag.ErrorMessage = "Bu saat dolu, lütfen başka bir saat seçiniz.";
                 return View(randevu);
             }
 
             try
             {
-                // Randevuyu kaydet
                 _context.Randevular.Add(randevu);
                 _context.SaveChanges();
                 TempData["SuccessMessage"] = "Randevunuz başarıyla oluşturuldu!";
@@ -58,7 +69,7 @@ namespace WebProje.Controllers
             {
                 ViewBag.Calisanlar = _context.Calisanlar.ToList();
                 ViewBag.Islemler = _context.Islemler.ToList();
-                ViewBag.ErrorMessage = "Randevu kaydedilirken bir hata oluştu: " + ex.Message;
+                ViewBag.ErrorMessage = $"Veritabanına kaydetme sırasında hata oluştu: {ex.Message}";
                 return View(randevu);
             }
         }
@@ -95,11 +106,29 @@ namespace WebProje.Controllers
             var randevular = _context.Randevular
                 .Include(r => r.Calisan)
                 .Include(r => r.Islem)
-                .OrderBy(r => r.Tarih)
-                .ThenBy(r => r.Saat)
+                .AsEnumerable() // Verileri belleğe alıyoruz
+                .Select(r => new RandevuViewModel
+                {
+                    Id = r.Id,
+                    CalisanAdSoyad = r.Calisan.Ad + " " + r.Calisan.Soyad,
+                    IslemAd = r.Islem.Ad,
+                    Tarih = r.Tarih,
+                    Saat = r.Saat,
+                    KullaniciId = r.KullaniciId,
+                    KullaniciAdSoyad = _context.Kullanicilar
+                        .FirstOrDefault(k => k.Id.ToString() == r.KullaniciId)?.Ad + " " +
+                                          _context.Kullanicilar
+                        .FirstOrDefault(k => k.Id.ToString() == r.KullaniciId)?.Soyad,
+                    KullaniciTelefon = _context.Kullanicilar
+                        .FirstOrDefault(k => k.Id.ToString() == r.KullaniciId)?.Telefon
+                })
                 .ToList();
 
             return View(randevular);
         }
+
+
+
+
     }
 }

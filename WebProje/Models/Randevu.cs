@@ -25,5 +25,6 @@ namespace WebProje.Models
 
         [Required(ErrorMessage = "Kullanıcı ID zorunludur.")]
         public string KullaniciId { get; set; }
+
     }
 }
