@@ -11,6 +11,12 @@ namespace WebProje.Controllers
         [HttpGet]
         public IActionResult RandevuOlustur()
         {
+            var userId = HttpContext.Session.GetString("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             ViewBag.Calisanlar = _context.Calisanlar.ToList();
             ViewBag.Islemler = _context.Islemler.ToList();
             return View();
@@ -18,7 +24,6 @@ namespace WebProje.Controllers
         [HttpPost]
         public IActionResult RandevuOlustur(Randevu randevu)
         {
-            // Kullanıcı oturumundan UserId'yi al
             var userId = HttpContext.Session.GetString("UserId");
             if (string.IsNullOrEmpty(userId))
             {
@@ -28,7 +33,6 @@ namespace WebProje.Controllers
                 return View(randevu);
             }
 
-            // Kullanıcı ID'sini modele ekle
             randevu.KullaniciId = userId;
 
             //if (!ModelState.IsValid)
@@ -97,6 +101,12 @@ namespace WebProje.Controllers
         [HttpGet]
         public IActionResult TumRandevular()
         {
+            var userId = HttpContext.Session.GetString("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             if (HttpContext.Session.GetString("UserRole") != "Admin")
             {
                 TempData["ErrorMessage"] = "Bu sayfaya erişim yetkiniz yok.";

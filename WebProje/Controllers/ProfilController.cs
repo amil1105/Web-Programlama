@@ -13,9 +13,6 @@ namespace WebProje.Controllers
             _context = context;
         }
        
-
-        // Kullanıcı profilini görüntüleme
-        [HttpGet]
         [HttpGet]
         public IActionResult Index()
         {
