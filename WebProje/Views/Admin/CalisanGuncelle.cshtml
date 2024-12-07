@@ -2,21 +2,55 @@
 
 <div class="container py-5">
     <h2>Çalışan Güncelle</h2>
-    <form method="post">
-        <input type="hidden" name="Id" value="@Model.Id" />
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <form method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="Ad" class="form-label">Ad</label>
             <input type="text" class="form-control" id="Ad" name="Ad" value="@Model.Ad" required>
         </div>
+
         <div class="mb-3">
             <label for="Soyad" class="form-label">Soyad</label>
             <input type="text" class="form-control" id="Soyad" name="Soyad" value="@Model.Soyad" required>
         </div>
+
         <div class="mb-3">
             <label for="UzmanlikAlanlari" class="form-label">Uzmanlık Alanları</label>
-            <input type="text" class="form-control" id="UzmanlikAlanlari" name="UzmanlikAlanlari" value="@Model.UzmanlikAlanlari" required>
+            <input type="text" class="form-control" id="UzmanlikAlanlari" name="UzmanlikAlanlari" value="@Model.UzmanlikAlanlari">
         </div>
-        <button type="submit" class="btn btn-primary">Kaydet</button>
+
+        <div class="mb-3">
+            <label for="Telefon" class="form-label">Telefon</label>
+            <input type="tel" class="form-control" id="Telefon" name="Telefon" value="@Model.Telefon" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="Adres" class="form-label">Adres</label>
+            <input type="text" class="form-control" id="Adres" name="Adres" value="@Model.Adres">
+        </div>
+
+        <div class="mb-3">
+            <label for="ProfilFoto" class="form-label">Profil Fotoğrafı</label>
+            @if (!string.IsNullOrEmpty(Model.ProfilFotoPath))
+            {
+                <div class="mb-2">
+                    <img src="@Model.ProfilFotoPath" alt="Profil Fotoğrafı" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+                </div>
+            }
+            <input type="file" class="form-control" id="ProfilFoto" name="ProfilFoto" accept="image/*">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Güncelle</button>
         <a href="/Admin/CalisanListesi" class="btn btn-secondary">İptal</a>
     </form>
 </div>

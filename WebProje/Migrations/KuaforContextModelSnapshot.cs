@@ -41,6 +41,9 @@ namespace WebProje.Migrations
                     b.Property<int?>("MagazaId")
                         .HasColumnType("int");
 
+                    b.Property<string>("ProfilFotoPath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Soyad")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -140,8 +143,8 @@ namespace WebProje.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Telefon")
-                        .HasColumnType("int");
+                    b.Property<long>("Telefon")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 

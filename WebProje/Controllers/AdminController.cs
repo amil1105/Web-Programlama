@@ -57,22 +57,41 @@ namespace WebProje.Controllers
         }
 
         [HttpPost]
-        public IActionResult CalisanGuncelle(Calisan calisan)
+        public IActionResult CalisanGuncelle(Calisan calisan, IFormFile? ProfilFoto)
         {
             var mevcutCalisan = _context.Calisanlar.FirstOrDefault(c => c.Id == calisan.Id);
             if (mevcutCalisan == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "Çalışan bulunamadı!";
+                return RedirectToAction("CalisanListesi");
             }
 
             mevcutCalisan.Ad = calisan.Ad;
             mevcutCalisan.Soyad = calisan.Soyad;
             mevcutCalisan.UzmanlikAlanlari = calisan.UzmanlikAlanlari;
+            mevcutCalisan.Telefon = calisan.Telefon;
+            mevcutCalisan.Adres = calisan.Adres;
+
+            if (ProfilFoto != null && ProfilFoto.Length > 0)
+            {
+                string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + ProfilFoto.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    ProfilFoto.CopyTo(fileStream);
+                }
+
+                mevcutCalisan.ProfilFotoPath = "/uploads/" + uniqueFileName;
+            }
 
             _context.SaveChanges();
             TempData["SuccessMessage"] = "Çalışan başarıyla güncellendi!";
             return RedirectToAction("CalisanListesi");
         }
+
+
 
         [HttpGet]
         public IActionResult IslemGuncelle(int id)
@@ -110,17 +129,35 @@ namespace WebProje.Controllers
         }
 
         [HttpPost]
-        public IActionResult CalisanEkle(Calisan calisan)
+        public IActionResult CalisanEkle(Calisan calisan, IFormFile? ProfilFoto)
         {
-            if (ModelState.IsValid)
+            if (ProfilFoto != null && ProfilFoto.Length > 0)
             {
-                _context.Calisanlar.Add(calisan);
-                _context.SaveChanges();
-                TempData["SuccessMessage"] = "Çalışan başarıyla eklendi!";
-                return RedirectToAction("CalisanListesi");
+                string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + ProfilFoto.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    ProfilFoto.CopyTo(fileStream);
+                }
+
+                calisan.ProfilFotoPath = "/uploads/" + uniqueFileName;
             }
-            return View(calisan);
+            else
+            {
+                calisan.ProfilFotoPath = "/uploads/default-profile.png";
+            }
+
+            _context.Calisanlar.Add(calisan);
+            _context.SaveChanges();
+
+            TempData["SuccessMessage"] = "Çalışan başarıyla eklendi!";
+            return RedirectToAction("CalisanListesi");
         }
+
+
 
         public IActionResult CalisanListesi()
         {
@@ -128,7 +165,6 @@ namespace WebProje.Controllers
             return View(calisanlar);
         }
 
-        // Çalışan Silme
         public IActionResult CalisanSil(int id)
         {
             var calisan = _context.Calisanlar.FirstOrDefault(c => c.Id == id);

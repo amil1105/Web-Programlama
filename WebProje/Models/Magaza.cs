@@ -6,7 +6,7 @@
         public string Ad { get; set; }
         public string Adres { get; set; }
 
-        public int Telefon { get; set; }
+        public Int64 Telefon { get; set; }
 
         public string CalismaSaatleri { get; set; }
         public ICollection<Calisan> Calisanlar { get; set; }

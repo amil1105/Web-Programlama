@@ -10,6 +10,8 @@
         public Int64 Telefon {  get; set; }
         
         public string Adres {  get; set; }
-        
+
+        public string? ProfilFotoPath { get; set; }
+
     }
 }

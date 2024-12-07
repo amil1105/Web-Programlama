@@ -2,45 +2,88 @@
 
 <div class="container py-5">
     <h2>Randevu Oluştur</h2>
-
-    @if (ViewBag.ErrorMessage != null)
+    @if (TempData["ErrorMessage"] != null)
     {
-        <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
     }
-
-    <form method="post">
-        <div class="mb-3">
-            <label for="CalisanId" class="form-label">Çalışan</label>
-            <select id="CalisanId" name="CalisanId" class="form-control" required>
-                <option value="">Seçiniz</option>
-                @foreach (var calisan in ViewBag.Calisanlar)
-                {
-                    <option value="@calisan.Id">@calisan.Ad @calisan.Soyad</option>
-                }
-            </select>
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="RandevuOlustur" method="post">
+                <div class="mb-3">
+                    <label for="Calisan" class="form-label">Çalışan</label>
+                    <select class="form-select" id="Calisan" name="CalisanId">
+                        <option value="">Seçiniz</option>
+                        @foreach (var calisan in ViewBag.Calisanlar)
+                        {
+                            <option value="@calisan.Id">@calisan.Ad @calisan.Soyad</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="Islem" class="form-label">İşlem</label>
+                    <select class="form-select" id="Islem" name="IslemId">
+                        <option value="">Seçiniz</option>
+                        @foreach (var islem in ViewBag.Islemler)
+                        {
+                            <option value="@islem.Id">@islem.Ad (@islem.Ucret ₺, @islem.Sure dakika)</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="Tarih" class="form-label">Tarih</label>
+                    <input type="date" class="form-control" id="Tarih" name="Tarih" required />
+                </div>
+                <div class="mb-3">
+                    <label for="Saat" class="form-label">Saat</label>
+                    <input type="time" class="form-control" id="Saat" name="Saat" required />
+                </div>
+                <button type="submit" class="btn btn-primary">Randevu Oluştur</button>
+            </form>
         </div>
-
-        <div class="mb-3">
-            <label for="IslemId" class="form-label">İşlem</label>
-            <select id="IslemId" name="IslemId" class="form-control" required>
-                <option value="">Seçiniz</option>
-                @foreach (var islem in ViewBag.Islemler)
-                {
-                    <option value="@islem.Id">@islem.Ad (@islem.Ucret ₺, @islem.Sure dakika)</option>
-                }
-            </select>
+        <div class="col-md-6">
+            <h4>Çalışan Bilgileri</h4>
+            <div class="card p-3">
+                <img id="calisanFoto" src="/uploads/default-profile.png" alt="Çalışan Fotoğrafı" class="img-fluid rounded-circle mb-3" style="width: 100px; height: 100px;">
+                <p><strong>Ad Soyad:</strong> <span id="calisanAdSoyad">Belirtilmemiş</span></p>
+                <p><strong>Telefon:</strong> <span id="calisanTelefon">Belirtilmemiş</span></p>
+                <p><strong>Uzmanlık Alanları:</strong> <span id="calisanUzmanlik">Belirtilmemiş</span></p>
+                <p><strong>Adres:</strong> <span id="calisanAdres">Belirtilmemiş</span></p>
+            </div>
         </div>
-
-        <div class="mb-3">
-            <label for="Tarih" class="form-label">Tarih</label>
-            <input type="date" id="Tarih" name="Tarih" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="Saat" class="form-label">Saat</label>
-            <input type="time" id="Saat" name="Saat" class="form-control" required>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Randevu Oluştur</button>
-    </form>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#Calisan').change(function () {
+                var calisanId = $(this).val();
+                if (calisanId) {
+                    $.ajax({
+                        url: '/Randevu/GetCalisanDetails',
+                        type: 'GET',
+                        data: { id: calisanId },
+                        success: function (data) {
+                            if (data) {
+                                $('#calisanAdSoyad').text(data.adSoyad);
+                                $('#calisanTelefon').text(data.telefon);
+                                $('#calisanUzmanlik').text(data.uzmanlikAlanlari);
+                                $('#calisanAdres').text(data.adres);
+                                $('#calisanFoto').attr('src', data.profilFotoPath);
+                            }
+                        },
+                        error: function (error) {
+                            console.log('Hata:', error);
+                        }
+                    });
+                } else {
+                    $('#calisanAdSoyad').text('Belirtilmemiş');
+                    $('#calisanTelefon').text('Belirtilmemiş');
+                    $('#calisanUzmanlik').text('Belirtilmemiş');
+                    $('#calisanAdres').text('Belirtilmemiş');
+                    $('#calisanFoto').attr('src', '/uploads/default-profile.png');
+                }
+            });
+        });
+    </script>
+}

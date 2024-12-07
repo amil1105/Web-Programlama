@@ -78,6 +78,28 @@ namespace WebProje.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult GetCalisanDetails(int id)
+        {
+            var calisan = _context.Calisanlar.FirstOrDefault(c => c.Id == id);
+            if (calisan == null)
+            {
+                return NotFound();
+            }
+
+            var calisanDetails = new
+            {
+                adSoyad = $"{calisan.Ad} {calisan.Soyad}",
+                telefon = calisan.Telefon.ToString(),
+                uzmanlikAlanlari = calisan.UzmanlikAlanlari ?? "Belirtilmemiş",
+                adres = calisan.Adres ?? "Belirtilmemiş",
+                profilFotoPath = calisan.ProfilFotoPath ?? "/uploads/default-profile.png"
+            };
+
+            return Json(calisanDetails);
+        }
+
+
         public IActionResult Randevularim()
         {
             var userId = HttpContext.Session.GetString("UserId");
@@ -116,7 +138,7 @@ namespace WebProje.Controllers
             var randevular = _context.Randevular
                 .Include(r => r.Calisan)
                 .Include(r => r.Islem)
-                .AsEnumerable() // Verileri belleğe alıyoruz
+                .AsEnumerable() 
                 .Select(r => new RandevuViewModel
                 {
                     Id = r.Id,
