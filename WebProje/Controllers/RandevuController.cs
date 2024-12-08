@@ -35,18 +35,7 @@ namespace WebProje.Controllers
 
             randevu.KullaniciId = userId;
 
-            //if (!ModelState.IsValid)
-            //{
-            //    ViewBag.Calisanlar = _context.Calisanlar.ToList();
-            //    ViewBag.Islemler = _context.Islemler.ToList();
-
-            //    // ModelState hatalarını ekrana yazdır
-            //    ViewBag.ErrorMessage = string.Join("<br>", ModelState.Values
-            //        .SelectMany(v => v.Errors)
-            //        .Select(e => e.ErrorMessage));
-
-            //    return View(randevu);
-            //}
+          
 
             // Çakışan randevu kontrolü
             bool isConflict = _context.Randevular.Any(r =>
