@@ -91,9 +91,59 @@ namespace WebProje.Controllers
             return RedirectToAction("CalisanListesi");
         }
 
-
-
         [HttpGet]
+        public IActionResult Raporlar()
+        {
+            var calisanlar = _context.Calisanlar.ToList();
+            var viewModel = new RaporViewModel
+            {
+                Calisanlar = calisanlar,
+                BaslangicTarihi = DateTime.Today.AddDays(-7), // Varsayılan: son 7 gün
+                BitisTarihi = DateTime.Today // Varsayılan: bugünün tarihi
+            };
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public IActionResult Raporlar(DateTime baslangicTarihi, DateTime bitisTarihi, int? calisanId)
+        {
+            var randevular = _context.Randevular
+                .Where(r => r.Tarih >= baslangicTarihi && r.Tarih <= bitisTarihi);
+
+            if (calisanId.HasValue)
+            {
+                randevular = randevular.Where(r => r.CalisanId == calisanId);
+            }
+
+            var rapor = new RaporViewModel
+            {
+                CalisanBazindaIslem = randevular
+         .GroupBy(r => r.CalisanId)
+         .Select(g => new CalisanRaporu
+         {
+             CalisanAdi = g.FirstOrDefault() != null
+                 ? g.FirstOrDefault().Calisan.Ad + " " + g.FirstOrDefault().Calisan.Soyad
+                 : "Bilinmiyor",
+             IslemSayisi = g.Count(),
+             ToplamKazanc = g.Sum(r => r.Islem.Ucret)
+         })
+         .ToList(),
+                MagazaGunlukKazanc = randevular.Sum(r => r.Islem.Ucret),
+                BaslangicTarihi = baslangicTarihi,
+                BitisTarihi = bitisTarihi,
+                SeciliCalisan = calisanId.HasValue
+         ? _context.Calisanlar.FirstOrDefault(c => c.Id == calisanId)?.Ad + " " + _context.Calisanlar.FirstOrDefault(c => c.Id == calisanId)?.Soyad
+         : "Tüm Çalışanlar",
+                Calisanlar = _context.Calisanlar.ToList()
+            };
+
+
+            return View("_FiltreliRaporSonuclari", rapor);
+        }
+    
+
+
+    [HttpGet]
         public IActionResult IslemGuncelle(int id)
         {
             var islem = _context.Islemler.FirstOrDefault(i => i.Id == id);
@@ -121,6 +171,13 @@ namespace WebProje.Controllers
             TempData["SuccessMessage"] = "İşlem başarıyla güncellendi!";
             return RedirectToAction("IslemListesi");
         }
+
+
+
+
+
+
+
 
         [HttpGet]
         public IActionResult CalisanEkle()

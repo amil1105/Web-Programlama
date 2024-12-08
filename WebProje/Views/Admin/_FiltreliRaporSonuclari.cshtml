@@ -1,0 +1,29 @@
+﻿@model WebProje.Models.RaporViewModel
+
+<div class="container mt-4">
+    <h3>Rapor Sonuçları</h3>
+    <p>Seçili Çalışan: @Model.SeciliCalisan</p>
+    <p>Tarih Aralığı: @Model.BaslangicTarihi.ToShortDateString() - @Model.BitisTarihi.ToShortDateString()</p>
+    <p>Toplam Kazanç: @Model.MagazaGunlukKazanc.ToString("C")</p>
+
+    <h4>Çalışan Bazında İşlemler</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Çalışan Adı</th>
+                <th>İşlem Sayısı</th>
+                <th>Toplam Kazanç</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.CalisanBazindaIslem)
+            {
+                <tr>
+                    <td>@item.CalisanAdi</td>
+                    <td>@item.IslemSayisi</td>
+                    <td>@item.ToplamKazanc.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

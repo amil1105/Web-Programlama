@@ -11,7 +11,7 @@
             <form asp-action="RandevuOlustur" method="post">
                 <div class="mb-3">
                     <label for="Calisan" class="form-label">Çalışan</label>
-                    <select class="form-select" id="Calisan" name="CalisanId">
+                    <select class="form-select" id="Calisan" name="CalisanId" required>
                         <option value="">Seçiniz</option>
                         @foreach (var calisan in ViewBag.Calisanlar)
                         {
@@ -21,7 +21,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="Islem" class="form-label">İşlem</label>
-                    <select class="form-select" id="Islem" name="IslemId">
+                    <select class="form-select" id="Islem" name="IslemId" required>
                         <option value="">Seçiniz</option>
                         @foreach (var islem in ViewBag.Islemler)
                         {
@@ -31,13 +31,15 @@
                 </div>
                 <div class="mb-3">
                     <label for="Tarih" class="form-label">Tarih</label>
-                    <input type="date" class="form-control" id="Tarih" name="Tarih" required />
+                    <input type="date" class="form-control" id="Tarih" name="Tarih" min="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                    <button type="button" class="btn btn-info mt-2" onclick="SetToday()">Bugün</button>
+                    <button type="button" class="btn btn-info mt-2" onclick="SetTomorrow()">Yarın</button>
                 </div>
                 <div class="mb-3">
                     <label for="Saat" class="form-label">Saat</label>
-                    <input type="time" class="form-control" id="Saat" name="Saat" required />
+                    <input type="time" class="form-control" id="Saat" name="Saat" min="@ViewBag.AcilisSaati" max="@ViewBag.KapanisSaati" required />
                 </div>
-                <button type="submit" class="btn btn-primary">Randevu Oluştur</button>
+                <button type="submit" class="btn btn-primary" onclick="return confirm('Randevu oluşturmak istediğinizden emin misiniz?');">Randevu Oluştur</button>
             </form>
         </div>
         <div class="col-md-6">
@@ -49,12 +51,27 @@
                 <p><strong>Uzmanlık Alanları:</strong> <span id="calisanUzmanlik">Belirtilmemiş</span></p>
                 <p><strong>Adres:</strong> <span id="calisanAdres">Belirtilmemiş</span></p>
             </div>
+            <div class="mt-4">
+                <p><strong>Güncel Tarih:</strong> @DateTime.Now.ToString("dd.MM.yyyy")</p>
+                <p><strong>Güncel Saat:</strong> @DateTime.Now.ToString("HH:mm")</p>
+            </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
     <script>
+        function SetToday() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('Tarih').value = today;
+        }
+
+        function SetTomorrow() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('Tarih').value = tomorrow.toISOString().split('T')[0];
+        }
+
         $(document).ready(function () {
             $('#Calisan').change(function () {
                 var calisanId = $(this).val();

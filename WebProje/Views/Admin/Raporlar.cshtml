@@ -1,0 +1,30 @@
+﻿@model WebProje.Models.RaporViewModel
+
+<div class="container mt-4">
+    <h2>Raporlar</h2>
+    <form method="post" action="/Admin/Raporlar">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="calisanId">Çalışan Seçin:</label>
+                <select class="form-control" id="calisanId" name="calisanId">
+                    <option value="">Tüm Çalışanlar</option>
+                    @foreach (var calisan in Model.Calisanlar)
+                    {
+                        <option value="@calisan.Id">@calisan.Ad @calisan.Soyad</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="baslangicTarihi">Başlangıç Tarihi:</label>
+                <input type="date" class="form-control" id="baslangicTarihi" name="baslangicTarihi" value="@Model.BaslangicTarihi.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-md-3">
+                <label for="bitisTarihi">Bitiş Tarihi:</label>
+                <input type="date" class="form-control" id="bitisTarihi" name="bitisTarihi" value="@Model.BitisTarihi.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Filtrele</button>
+            </div>
+        </div>
+    </form>
+</div>

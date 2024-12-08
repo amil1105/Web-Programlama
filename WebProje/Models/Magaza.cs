@@ -8,7 +8,7 @@
 
         public Int64 Telefon { get; set; }
 
-        public string CalismaSaatleri { get; set; }
-        public ICollection<Calisan> Calisanlar { get; set; }
+        public TimeSpan AcilisSaati { get; set; } 
+        public TimeSpan KapanisSaati { get; set; } 
     }
 }
