@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["Title"] = "Yapay Zeka Özelliği";
+}
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">Yapay Zeka Görsel Düzenleme</h2>
+
+    <!-- Görsel Oluşturma Formu -->
+    <form id="imageForm">
+        <div class="mb-3">
+            <label for="imageUrl" class="form-label">Görsel URL'si:</label>
+            <input type="url" id="imageUrl" class="form-control" placeholder="Görsel URL'sini girin" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Görselleri Oluştur</button>
+    </form>
+
+    <!-- API Yanıtları -->
+    <div id="output" class="mt-4 text-center"></div>
+</div>
+
+<script>
+    document.getElementById("imageForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const imageUrl = document.getElementById("imageUrl").value;
+
+        // Stil Görsellerinin URL'leri
+        const styleUrls = [
+            "https://blog.watsons.com.tr/wp-content/uploads/kivircik-sac%CC%A7-bakim-rutini-900x600.jpg", // Düz saç stili
+            "https://www.technopat.net/sosyal/eklenti/c63b5b16-38d9-4b28-aa17-31fdea7dd416-jpg.1696070/", // Dalgalı saç stili
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwoMD3qBS3jC_NRXZ5N-Z5aT4Zu-yUJbupVQ&s" // Kıvırcık saç stili
+        ];
+
+        document.getElementById("output").innerHTML = `<div class="alert alert-info">Lütfen bekleyin, görseller işleniyor...</div>`;
+
+        try {
+            const generatedImages = await Promise.all(styleUrls.map(async (styleUrl) => {
+                const data = {
+                    imageUrl: imageUrl,
+                    styleImageUrl: styleUrl,
+                    textPrompt: "set hairstyle for this man", // Sabit değer
+                    strength: 0.5, // Sabit değer
+                    styleStrength: 0.9 // Sabit değer
+                };
+
+                const response = await fetch("/api/LightX/generate-image", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const errorMessage = await response.text();
+                    console.error(`Hata: ${errorMessage}`);
+                    return null;
+                }
+
+                return await response.text(); // Görsel URL'si döndürülür
+            }));
+
+            // Tüm görselleri ekrana yerleştir
+            const outputDiv = document.getElementById("output");
+            outputDiv.innerHTML = `<h4 class="text-success mt-4">Görseller Başarıyla Oluşturuldu:</h4>`;
+            generatedImages.forEach((imageUrl, index) => {
+                if (imageUrl) {
+                    outputDiv.innerHTML += `
+                            <div class="d-inline-block mx-2">
+                                <h5 class="text-center">Stil ${index + 1}</h5>
+                                <img src="${imageUrl}" class="img-fluid mt-2" alt="Generated Image ${index + 1}" style="max-width: 300px; max-height: 300px;">
+                            </div>
+                        `;
+                } else {
+                    outputDiv.innerHTML += `<div class="alert alert-danger">Stil ${index + 1} için görsel oluşturulamadı.</div>`;
+                }
+            });
+        } catch (error) {
+            console.error("Hata:", error);
+            document.getElementById("output").innerHTML = `<div class="alert alert-danger">Bir hata oluştu. Lütfen tekrar deneyin.</div>`;
+        }
+    });
+</script>

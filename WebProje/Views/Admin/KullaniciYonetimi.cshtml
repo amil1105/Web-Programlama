@@ -1,0 +1,146 @@
+﻿@model IEnumerable<WebProje.Models.Kullanici>
+
+<div class="container py-5">
+    <h2 class="text-center mb-4" style="color: #333;">Kullanıcı Yönetimi</h2>
+
+    <!-- API Hata Mesajları -->
+    <div id="message-container"></div>
+
+    <!-- Arama ve Filtreleme -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <input type="text" id="searchName" class="form-control" placeholder="İsim ile ara" />
+        </div>
+        <div class="col-md-4">
+            <select id="roleFilter" class="form-select">
+                <option value="">Tüm Roller</option>
+                <option value="Admin">Admin</option>
+                <option value="Calisan">Çalışan</option>
+                <option value="Uye">Üye</option>
+            </select>
+        </div>
+        <div class="col-md-4 text-end">
+            <button class="btn btn-primary" onclick="applyFilters()">Ara</button>
+            <button class="btn btn-secondary" onclick="clearFilters()">Temizle</button>
+        </div>
+    </div>
+
+    <!-- Kullanıcı Tablosu -->
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Ad Soyad</th>
+                <th>Email</th>
+                <th>Telefon</th>
+                <th>Rol</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody id="kullanici-tablo">
+            <!-- Kullanıcılar dinamik olarak doldurulacak -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Sayfa yüklendiğinde kullanıcıları yükle
+    document.addEventListener("DOMContentLoaded", function () {
+        fetchKullanicilar();
+    });
+
+    // Kullanıcıları API'den getirme
+    function fetchKullanicilar(rol = "", isim = "") {
+        const url = `/api/KullaniciApi/searchKullanicilar?rol=${rol}&isim=${isim}`; // LINQ sorgusu bu endpoint üzerinden çalışır.
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`API hatası: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.length === 0) {
+                    showMessage("danger", "Kullanıcı listesi boş.");
+                } else {
+                    populateTable(data);
+                }
+            })
+            .catch(error => {
+                console.error("API çağrısında bir hata oluştu:", error);
+                showMessage("danger", "API'den kullanıcı verisi alınamadı!");
+            });
+    }
+
+    // Tabloyu doldur
+    function populateTable(users) {
+        const tableBody = document.getElementById("kullanici-tablo");
+        tableBody.innerHTML = ""; // Mevcut tabloyu temizle
+
+        users.forEach(user => {
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                        <td>${user.id}</td>
+                        <td>${user.ad} ${user.soyad}</td>
+                        <td>${user.email}</td>
+                        <td>${user.telefon}</td>
+                        <td>${user.rol}</td>
+                        <td>
+                            <a href="/Admin/KullaniciGuncelle/${user.id}" class="btn btn-primary btn-sm">Güncelle</a>
+                            <button class="btn btn-danger btn-sm" onclick="deleteKullanici(${user.id})">Sil</button>
+                        </td>
+                    `;
+
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Kullanıcı Silme
+    function deleteKullanici(id) {
+        if (!confirm("Kullanıcıyı silmek istediğinize emin misiniz?")) {
+            return;
+        }
+
+        fetch(`/api/KullaniciApi/deleteKullanici/${id}`, {
+            method: "DELETE",
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`API hatası: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(result => {
+                showMessage("success", result.message);
+                applyFilters(); // Filtrelere göre kullanıcıları yeniden yükle
+            })
+            .catch(error => {
+                console.error("API çağrısında bir hata oluştu:", error);
+                showMessage("danger", "Kullanıcı silinemedi!");
+            });
+    }
+
+    // Filtreleme İşlemleri
+    function applyFilters() {
+        const isim = document.getElementById("searchName").value; // İsim filtresi
+        const rol = document.getElementById("roleFilter").value; // Rol filtresi
+        fetchKullanicilar(rol, isim);  // LINQ tabanlı API sorgusu burada çağrılır.
+    }
+
+    function clearFilters() {
+        document.getElementById("searchName").value = "";
+        document.getElementById("roleFilter").value = "";
+        fetchKullanicilar();
+    }
+
+    // Mesaj Gösterme
+    function showMessage(type, message) {
+        const container = document.getElementById("message-container");
+        container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+        setTimeout(() => {
+            container.innerHTML = ""; // Mesajı bir süre sonra temizle
+        }, 3000);
+    }
+</script>

@@ -26,5 +26,7 @@ namespace WebProje.Models
         [Required(ErrorMessage = "Kullanıcı ID zorunludur.")]
         public string KullaniciId { get; set; }
 
+        public int RandevuDurum { get; set; } = 0; // 0: Bekliyor, 1: Onaylı, 2: Reddedildi
+
     }
 }

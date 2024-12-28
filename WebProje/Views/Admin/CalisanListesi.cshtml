@@ -3,38 +3,68 @@
 <div class="container py-5">
     <h2 class="text-center mb-4" style="color: #333;">Çalışan Listesi</h2>
 
+    <!-- Geri Bildirim Mesajları -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <!-- Yeni Çalışan Ekle Butonu -->
     <div class="text-end mb-3">
         <a href="/Admin/CalisanEkle" class="btn btn-primary">Yeni Çalışan Ekle</a>
     </div>
 
-    <table class="table table-bordered">
-        <thead>
+    <!-- Çalışan Listesi Tablosu -->
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
             <tr>
                 <th>Fotoğraf</th>
                 <th>Ad Soyad</th>
-                <th>Uzmanlık</th>
                 <th>Telefon</th>
                 <th>Adres</th>
                 <th>İşlemler</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var calisan in Model)
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var calisan in Model)
+                {
+                    <tr>
+                        <!-- Çalışan Fotoğrafı -->
+                        <td>
+                            <img src="@calisan.ProfilFotoPath" alt="Profil Fotoğrafı"
+                                 style="width: 100px; height: 100px; object-fit: cover;" />
+                        </td>
+
+                        <!-- Çalışan Bilgileri -->
+                        <td>@calisan.Ad @calisan.Soyad</td>
+                      
+                        <td>@calisan.Telefon</td>
+                        <td>@calisan.Adres</td>
+
+                        <!-- İşlem Butonları -->
+                        <td>
+                            <a href="/Admin/CalisanGuncelle/@calisan.Id" class="btn btn-primary btn-sm">Düzenle</a>
+                            <form method="post" action="/Admin/CalisanSil" style="display:inline;"
+                                  onsubmit="return confirm('Bu çalışanı silmek istediğinizden emin misiniz?');">
+                                <input type="hidden" name="id" value="@calisan.Id" />
+                                <button type="submit" class="btn btn-danger btn-sm">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            else
             {
                 <tr>
-                    <td>
-                        <img src="@calisan.ProfilFotoPath" alt="Profil Fotoğrafı" style="width: 100px; height: 100px; object-fit: cover;">
-                    </td>
-                    <td>@calisan.Ad @calisan.Soyad</td>
-                    <td>@calisan.UzmanlikAlanlari</td>
-                    <td>@calisan.Telefon</td>
-                    <td>@calisan.Adres</td>
-                    <td>
-                        <a href="/Admin/CalisanGuncelle/@calisan.Id" class="btn btn-primary btn-sm">Düzenle</a>
-                    </td>
+                    <td colspan="6" class="text-center text-muted">Henüz çalışan eklenmedi.</td>
                 </tr>
             }
         </tbody>
     </table>
-
 </div>

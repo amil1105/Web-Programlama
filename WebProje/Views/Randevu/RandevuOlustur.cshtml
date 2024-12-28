@@ -22,11 +22,7 @@
                 <div class="mb-3">
                     <label for="Islem" class="form-label">İşlem</label>
                     <select class="form-select" id="Islem" name="IslemId" required>
-                        <option value="">Seçiniz</option>
-                        @foreach (var islem in ViewBag.Islemler)
-                        {
-                            <option value="@islem.Id">@islem.Ad (@islem.Ucret ₺, @islem.Sure dakika)</option>
-                        }
+                        <option value="">İşlem Seçiniz</option>
                     </select>
                 </div>
                 <div class="mb-3">
@@ -48,8 +44,6 @@
                 <img id="calisanFoto" src="/uploads/default-profile.png" alt="Çalışan Fotoğrafı" class="img-fluid rounded-circle mb-3" style="width: 100px; height: 100px;">
                 <p><strong>Ad Soyad:</strong> <span id="calisanAdSoyad">Belirtilmemiş</span></p>
                 <p><strong>Telefon:</strong> <span id="calisanTelefon">Belirtilmemiş</span></p>
-                <p><strong>Uzmanlık Alanları:</strong> <span id="calisanUzmanlik">Belirtilmemiş</span></p>
-                <p><strong>Adres:</strong> <span id="calisanAdres">Belirtilmemiş</span></p>
             </div>
             <div class="mt-4">
                 <p><strong>Güncel Tarih:</strong> @DateTime.Now.ToString("dd.MM.yyyy")</p>
@@ -60,7 +54,58 @@
 </div>
 
 @section Scripts {
-    <script>
+    <script defer>
+        $(document).ready(function () {
+            // Çalışan seçimi değiştiğinde işlemleri yükle
+            $('#Calisan').change(function () {
+                var calisanId = $(this).val();
+                console.log("Seçilen Çalışan ID:", calisanId);
+
+                if (calisanId) {
+                    // Çalışanın detaylarını getir
+                    $.ajax({
+                        url: '/Randevu/GetCalisanDetails',
+                        type: 'GET',
+                        data: { id: calisanId },
+                        success: function (data) {
+                            if (data) {
+                                $('#calisanAdSoyad').text(data.adSoyad || 'Belirtilmemiş');
+                                $('#calisanTelefon').text(data.telefon || 'Belirtilmemiş');
+                                $('#calisanFoto').attr('src', data.profilFotoPath || '/uploads/default-profile.png');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Hata:", error);
+                        }
+                    });
+
+                    // Çalışanın işlemlerini getir
+                    $.ajax({
+                        url: '/Randevu/GetCalisanIslemler',
+                        type: 'GET',
+                        data: { calisanId: calisanId },
+                        success: function (data) {
+                            $('#Islem').empty();
+                            $('#Islem').append('<option value="">İşlem Seçiniz</option>');
+                            $.each(data, function (index, item) {
+                                $('#Islem').append(
+                                    `<option value="${item.id}">${item.ad} (${item.ucret} ₺, ${item.sure} dakika)</option>`
+                                );
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Hata:", error);
+                        }
+                    });
+                } else {
+                    // Seçim kaldırıldığında işlemleri sıfırla
+                    $('#Islem').empty();
+                    $('#Islem').append('<option value="">İşlem Seçiniz</option>');
+                }
+            });
+        });
+
+        // Bugün ve yarın butonları
         function SetToday() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('Tarih').value = today;
@@ -71,36 +116,5 @@
             tomorrow.setDate(tomorrow.getDate() + 1);
             document.getElementById('Tarih').value = tomorrow.toISOString().split('T')[0];
         }
-
-        $(document).ready(function () {
-            $('#Calisan').change(function () {
-                var calisanId = $(this).val();
-                if (calisanId) {
-                    $.ajax({
-                        url: '/Randevu/GetCalisanDetails',
-                        type: 'GET',
-                        data: { id: calisanId },
-                        success: function (data) {
-                            if (data) {
-                                $('#calisanAdSoyad').text(data.adSoyad);
-                                $('#calisanTelefon').text(data.telefon);
-                                $('#calisanUzmanlik').text(data.uzmanlikAlanlari);
-                                $('#calisanAdres').text(data.adres);
-                                $('#calisanFoto').attr('src', data.profilFotoPath);
-                            }
-                        },
-                        error: function (error) {
-                            console.log('Hata:', error);
-                        }
-                    });
-                } else {
-                    $('#calisanAdSoyad').text('Belirtilmemiş');
-                    $('#calisanTelefon').text('Belirtilmemiş');
-                    $('#calisanUzmanlik').text('Belirtilmemiş');
-                    $('#calisanAdres').text('Belirtilmemiş');
-                    $('#calisanFoto').attr('src', '/uploads/default-profile.png');
-                }
-            });
-        });
     </script>
 }

@@ -11,10 +11,16 @@ namespace WebProje.Controllers
         [HttpGet]
         public IActionResult RandevuOlustur()
         {
-            var userId = HttpContext.Session.GetString("UserId");
+            var userIdString = HttpContext.Session.GetString("UserId");
 
-            if (userId == null)
+            if (string.IsNullOrEmpty(userIdString))
             {
+                return RedirectToAction("Index", "Login");
+            }
+
+            if (!long.TryParse(userIdString, out var userId))
+            {
+                TempData["ErrorMessage"] = "Geçersiz kullanıcı bilgisi!";
                 return RedirectToAction("Index", "Login");
             }
 
@@ -27,6 +33,7 @@ namespace WebProje.Controllers
 
             return View(new Randevu());
         }
+
         [HttpPost]
         public IActionResult RandevuOlustur(Randevu randevu)
         {
@@ -37,8 +44,15 @@ namespace WebProje.Controllers
                 return RedirectToAction("Index", "Login");
             }
 
-            randevu.KullaniciId = kullaniciId;
+            if (!long.TryParse(kullaniciId, out var kullaniciIdLong))
+            {
+                TempData["ErrorMessage"] = "Geçersiz kullanıcı bilgisi!";
+                return RedirectToAction("Index", "Login");
+            }
 
+            randevu.KullaniciId = kullaniciIdLong.ToString();
+
+            // Mağaza saatlerini kontrol et
             var magaza = _context.Magazalar.FirstOrDefault();
             if (magaza == null)
             {
@@ -46,36 +60,66 @@ namespace WebProje.Controllers
                 return RedirectToAction("RandevuOlustur");
             }
 
-            if (randevu.Tarih < DateTime.Today || randevu.Tarih > DateTime.Today.AddYears(1))
+            var calisan = _context.Calisanlar
+                .Include(c => c.CalisanIslemler)
+                .FirstOrDefault(c => c.Id == randevu.CalisanId);
+
+            if (calisan == null)
             {
-                TempData["ErrorMessage"] = "Geçerli bir tarih seçiniz.";
+                TempData["ErrorMessage"] = "Seçilen çalışan bulunamadı.";
+                return RedirectToAction("RandevuOlustur");
+            }
+            //Pazartesi,Sali,Carsamba,Persembe,Cuma,Cumartesi
+            // Günlerin Türkçe karşılığını eşleştir
+            Dictionary<DayOfWeek, string> gunler = new Dictionary<DayOfWeek, string>
+    {
+        { DayOfWeek.Monday, "Pazartesi" },
+        { DayOfWeek.Tuesday, "Sali" },
+        { DayOfWeek.Wednesday, "Carsamba" },
+        { DayOfWeek.Thursday, "Persembe" },
+        { DayOfWeek.Friday, "Cuma" },
+        { DayOfWeek.Saturday, "Cumartesi" },
+        { DayOfWeek.Sunday, "Pazar" }
+    };
+
+            var randevuGun = gunler[randevu.Tarih.DayOfWeek];
+
+            // Çalışanın çalıştığı gün kontrolü
+            if (!calisan.CalismaGunleriListesi.Any(g => g.ToString() == randevuGun))
+            {
+                TempData["ErrorMessage"] = "Seçilen çalışan bu gün çalışmıyor.";
                 return RedirectToAction("RandevuOlustur");
             }
 
-            if (randevu.Saat < magaza.AcilisSaati || randevu.Saat > magaza.KapanisSaati)
+            // Randevu saati kontrolü
+            var randevuBaslangic = randevu.Tarih + randevu.Saat;
+            var randevuBitis = randevuBaslangic.AddMinutes(_context.Islemler.FirstOrDefault(i => i.Id == randevu.IslemId)?.Sure ?? 0);
+
+            if (randevu.Saat < calisan.CalismaBaslangicSaati || randevuBitis.TimeOfDay > calisan.CalismaBitisSaati)
             {
-                TempData["ErrorMessage"] = $"Saat mağaza çalışma saatleri arasında olmalıdır ({magaza.AcilisSaati} - {magaza.KapanisSaati}).";
+                TempData["ErrorMessage"] = "Seçilen çalışan bu saatlerde çalışmıyor.";
                 return RedirectToAction("RandevuOlustur");
             }
 
-            var islemSuresi = _context.Islemler.FirstOrDefault(i => i.Id == randevu.IslemId)?.Sure ?? 0;
-            var randevuBaslangic = randevu.Tarih.Add(randevu.Saat);
-            var randevuBitis = randevuBaslangic.AddMinutes(islemSuresi);
+            if (randevu.Saat < magaza.AcilisSaati || randevuBitis.TimeOfDay > magaza.KapanisSaati)
+            {
+                TempData["ErrorMessage"] = "Randevu saati mağaza çalışma saatleri dışında.";
+                return RedirectToAction("RandevuOlustur");
+            }
 
-            // Mevcut randevuları veri tabanından çek
+            // Çalışanın müsaitlik kontrolü
             var mevcutRandevular = _context.Randevular
                 .Where(r => r.CalisanId == randevu.CalisanId && r.Tarih == randevu.Tarih)
-                .ToList(); // Belleğe al
+                .ToList();
 
-            // Çalışanın uygunluk durumunu kontrol et
-            var calisanMesgulMu = mevcutRandevular.Any(r =>
+            bool calisanMesgulMu = mevcutRandevular.Any(r =>
             {
-                var mevcutBaslangic = r.Tarih.Add(r.Saat);
-                var mevcutBitis = mevcutBaslangic.AddMinutes(_context.Islemler.FirstOrDefault(i => i.Id == r.IslemId)?.Sure ?? 0);
+                var mevcutIslemSuresi = _context.Islemler.FirstOrDefault(i => i.Id == r.IslemId)?.Sure ?? 0;
+                var mevcutBaslangic = r.Tarih + r.Saat;
+                var mevcutBitis = mevcutBaslangic.AddMinutes(mevcutIslemSuresi);
 
-                return (randevuBaslangic >= mevcutBaslangic && randevuBaslangic < mevcutBitis) || // Yeni randevu mevcut randevunun içinde mi?
-                       (randevuBitis > mevcutBaslangic && randevuBitis <= mevcutBitis) ||         // Yeni randevu mevcut randevunun sonunda mı?
-                       (randevuBaslangic <= mevcutBaslangic && randevuBitis >= mevcutBitis);     // Yeni randevu mevcut randevuyu kapsıyor mu?
+                return (randevuBaslangic >= mevcutBaslangic && randevuBaslangic < mevcutBitis) ||
+                       (randevuBitis > mevcutBaslangic && randevuBitis <= mevcutBitis);
             });
 
             if (calisanMesgulMu)
@@ -90,7 +134,7 @@ namespace WebProje.Controllers
             {
                 _context.SaveChanges();
                 TempData["SuccessMessage"] = "Randevu başarıyla oluşturuldu.";
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Randevularim", "Randevu");
             }
             catch (Exception ex)
             {
@@ -105,43 +149,64 @@ namespace WebProje.Controllers
         public IActionResult GetCalisanDetails(int id)
         {
             var calisan = _context.Calisanlar.FirstOrDefault(c => c.Id == id);
-            if (calisan == null)
+            if (calisan != null)
             {
-                return NotFound();
+                return Json(new
+                {
+                    adSoyad = $"{calisan.Ad} {calisan.Soyad}",
+                    telefon = calisan.Telefon,
+                  //  uzmanlikAlanlari = calisan.UzmanlikAlanlari,
+                    adres = calisan.Adres,
+                    profilFotoPath = string.IsNullOrEmpty(calisan.ProfilFotoPath)
+                        ? "/uploads/default-profile.png"
+                        : Url.Content(calisan.ProfilFotoPath)
+                });
             }
+            return Json(null);
+        }
 
-            var calisanDetails = new
-            {
-                adSoyad = $"{calisan.Ad} {calisan.Soyad}",
-                telefon = calisan.Telefon.ToString(),
-                uzmanlikAlanlari = calisan.UzmanlikAlanlari ?? "Belirtilmemiş",
-                adres = calisan.Adres ?? "Belirtilmemiş",
-                profilFotoPath = calisan.ProfilFotoPath ?? "/uploads/default-profile.png"
-            };
+        [HttpGet]
+        public IActionResult GetCalisanIslemler(int calisanId)
+        {
+            // Çalışanın yapabildiği işlemleri getir
+            var islemIds = _context.CalisanIslemler
+                .Where(ci => ci.CalisanId == calisanId)
+                .Select(ci => ci.IslemId)
+                .ToList();
 
-            return Json(calisanDetails);
+            var islemler = _context.Islemler
+                .Where(i => islemIds.Contains(i.Id))
+                .Select(i => new { i.Id, i.Ad, i.Ucret, i.Sure })
+                .ToList();
+
+            return Json(islemler);
         }
 
 
+
+        [HttpGet]
         public IActionResult Randevularim()
         {
-            var userId = HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(userId))
+            // Kullanıcı oturum kontrolü
+            var kullaniciId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(kullaniciId))
             {
-                TempData["ErrorMessage"] = "Lütfen giriş yapınız.";
+                TempData["ErrorMessage"] = "Oturum süresi dolmuş. Lütfen tekrar giriş yapınız.";
                 return RedirectToAction("Index", "Login");
             }
 
+            // Kullanıcıya ait randevuları çek
             var randevular = _context.Randevular
                 .Include(r => r.Calisan)
                 .Include(r => r.Islem)
-                .Where(r => r.KullaniciId == userId)
+                .Where(r => r.KullaniciId == kullaniciId) // Kullanıcıya ait randevular
                 .OrderBy(r => r.Tarih)
                 .ThenBy(r => r.Saat)
                 .ToList();
 
             return View(randevular);
         }
+
 
         [HttpGet]
         public IActionResult TumRandevular()

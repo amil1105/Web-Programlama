@@ -16,11 +16,21 @@ namespace WebProje
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30); 
-                options.Cookie.HttpOnly = true; 
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder => builder.AllowAnyOrigin()
+                                      .AllowAnyMethod()
+                                      .AllowAnyHeader());
+            });
+
+
+            builder.Services.AddControllers();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -44,6 +54,10 @@ namespace WebProje
 
             app.UseSession();
 
+            app.UseCors("AllowAll");
+
+
+            
 
             app.UseAuthorization();
 
@@ -51,6 +65,9 @@ namespace WebProje
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
+
+
+            app.MapControllers(); // API Controller'lar için gerekli
             app.Run();
         }
     }

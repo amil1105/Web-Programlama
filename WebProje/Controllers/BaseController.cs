@@ -18,6 +18,7 @@ namespace WebProje.Controllers
             var magaza = _context.Magazalar.FirstOrDefault();
 
             ViewData["MagazaAdi"] = magaza?.Ad ?? @ViewData["MagazaAdi"];
+            ViewData["MagazaTelNo"] = magaza?.Telefon ?? @ViewData["MagazaTelNo"];
 
             var userId = HttpContext.Session.GetString("UserId");
             var userRole = HttpContext.Session.GetString("UserRole");

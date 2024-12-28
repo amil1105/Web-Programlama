@@ -1,56 +1,108 @@
 ﻿@model WebProje.Models.Calisan
 
 <div class="container py-5">
-    <h2>Çalışan Güncelle</h2>
-
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
-    }
-
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
-    }
+    <h2 class="text-center mb-4" style="color: #333;">Çalışan Güncelle</h2>
 
     <form method="post" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="Ad" class="form-label">Ad</label>
-            <input type="text" class="form-control" id="Ad" name="Ad" value="@Model.Ad" required>
-        </div>
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
 
-        <div class="mb-3">
-            <label for="Soyad" class="form-label">Soyad</label>
-            <input type="text" class="form-control" id="Soyad" name="Soyad" value="@Model.Soyad" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="UzmanlikAlanlari" class="form-label">Uzmanlık Alanları</label>
-            <input type="text" class="form-control" id="UzmanlikAlanlari" name="UzmanlikAlanlari" value="@Model.UzmanlikAlanlari">
-        </div>
-
-        <div class="mb-3">
-            <label for="Telefon" class="form-label">Telefon</label>
-            <input type="tel" class="form-control" id="Telefon" name="Telefon" value="@Model.Telefon" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="Adres" class="form-label">Adres</label>
-            <input type="text" class="form-control" id="Adres" name="Adres" value="@Model.Adres">
-        </div>
-
+        <!-- Profil Fotoğrafı -->
         <div class="mb-3">
             <label for="ProfilFoto" class="form-label">Profil Fotoğrafı</label>
+            <input type="file" class="form-control" id="ProfilFoto" name="ProfilFoto" accept="image/*">
             @if (!string.IsNullOrEmpty(Model.ProfilFotoPath))
             {
-                <div class="mb-2">
-                    <img src="@Model.ProfilFotoPath" alt="Profil Fotoğrafı" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+                <div class="mt-2">
+                    <img src="@Model.ProfilFotoPath" alt="Profil Fotoğrafı" style="width: 100px; height: 100px; object-fit: cover;" />
                 </div>
             }
-            <input type="file" class="form-control" id="ProfilFoto" name="ProfilFoto" accept="image/*">
         </div>
 
-        <button type="submit" class="btn btn-primary">Güncelle</button>
-        <a href="/Admin/CalisanListesi" class="btn btn-secondary">İptal</a>
+        <!-- Ad -->
+        <div class="mb-3">
+            <label for="Ad" class="form-label">Ad</label>
+            <input type="text" class="form-control" asp-for="Ad" required>
+        </div>
+
+        <!-- Soyad -->
+        <div class="mb-3">
+            <label for="Soyad" class="form-label">Soyad</label>
+            <input type="text" class="form-control" asp-for="Soyad" required>
+        </div>
+
+        <!-- Telefon -->
+        <div class="mb-3">
+            <label for="Telefon" class="form-label">Telefon</label>
+            <input type="text" class="form-control" asp-for="Telefon" required>
+        </div>
+
+        <!-- Adres -->
+        <div class="mb-3">
+            <label for="Adres" class="form-label">Adres</label>
+            <textarea class="form-control" asp-for="Adres" rows="3" required></textarea>
+        </div>
+
+        <!-- Yapabildiği İşlemler -->
+        <div class="mb-3">
+            <label for="Islemler" class="form-label">Yapabildiği İşlemler</label>
+            <select id="Islemler" name="IslemIds" multiple class="form-select" required>
+                @foreach (var islem in ViewBag.Islemler)
+                {
+                    bool isSelected = Model.CalisanIslemler.Any(ci => ci.IslemId == islem.Id);
+                    if (isSelected)
+                    {
+                        <option value="@islem.Id" selected>@islem.Ad (@islem.Ucret ₺, @islem.Sure dakika)</option>
+                    }
+                    else
+                    {
+                        <option value="@islem.Id">@islem.Ad (@islem.Ucret ₺, @islem.Sure dakika)</option>
+                    }
+                }
+            </select>
+            <small class="form-text text-muted">
+                Birden fazla işlem seçmek için Ctrl (Windows) veya Command (Mac) tuşunu kullanın.
+            </small>
+        </div>
+
+        <!-- Çalışma Günleri -->
+        <div class="mb-3">
+            <label for="CalismaGunleri" class="form-label">Çalışma Günleri</label>
+            <select id="CalismaGunleri" name="CalismaGunleri" multiple class="form-select" required>
+                @foreach (var gun in Enum.GetValues(typeof(WebProje.Models.Gunler)))
+                {
+                    bool isSelected = Model.CalismaGunleriListesi.Contains((WebProje.Models.Gunler)gun);
+                    if (isSelected)
+                    {
+                        <option value="@gun" selected>@gun</option>
+                    }
+                    else
+                    {
+                        <option value="@gun">@gun</option>
+                    }
+                }
+            </select>
+            <small class="form-text text-muted">
+                Birden fazla gün seçmek için Ctrl (Windows) veya Command (Mac) tuşunu kullanın.
+            </small>
+        </div>
+
+        <!-- Çalışma Saatleri -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="CalismaBaslangicSaati" class="form-label">Çalışma Başlangıç Saati</label>
+                <input type="time" class="form-control" id="CalismaBaslangicSaati" name="CalismaBaslangicSaati" value="@Model.CalismaBaslangicSaati.ToString(@"hh\:mm")" required>
+            </div>
+            <div class="col-md-6">
+                <label for="CalismaBitisSaati" class="form-label">Çalışma Bitiş Saati</label>
+                <input type="time" class="form-control" id="CalismaBitisSaati" name="CalismaBitisSaati" value="@Model.CalismaBitisSaati.ToString(@"hh\:mm")" required>
+            </div>
+        </div>
+
+        <!-- Butonlar -->
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary">Güncelle</button>
+            <a href="/Admin/CalisanListesi" class="btn btn-secondary">İptal</a>
+        </div>
     </form>
 </div>

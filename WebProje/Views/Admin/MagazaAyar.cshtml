@@ -2,19 +2,33 @@
 
 <div class="container py-5">
     <h2>Mağaza Ayarları</h2>
-    <form method="post">
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    <form asp-action="MagazaAyar" method="post">
         <div class="mb-3">
             <label for="Ad" class="form-label">Mağaza Adı</label>
-            <input type="text" class="form-control" id="Ad" name="Ad" value="@Model.Ad" required>
+            <input type="text" class="form-control" id="Ad" name="Ad" value="@Model.Ad" required />
         </div>
         <div class="mb-3">
             <label for="Adres" class="form-label">Adres</label>
-            <input type="text" class="form-control" id="Adres" name="Adres" value="@Model.Adres" required>
+            <input type="text" class="form-control" id="Adres" name="Adres" value="@Model.Adres" required />
         </div>
         <div class="mb-3">
             <label for="Telefon" class="form-label">Telefon</label>
-            <input type="text" class="form-control" id="Telefon" name="Telefon" value="@Model.Telefon" required>
+            <input type="text" class="form-control" id="Telefon" name="Telefon" value="@Model.Telefon" required />
         </div>
-        <button type="submit" class="btn btn-primary">Güncelle</button>
+        <div class="mb-3">
+            <label for="AcilisSaati" class="form-label">Açılış Saati</label>
+            <input type="time" class="form-control" id="AcilisSaati" name="AcilisSaati" value="@Model.AcilisSaati.ToString(@"hh\:mm")" required />
+        </div>
+        <div class="mb-3">
+            <label for="KapanisSaati" class="form-label">Kapanış Saati</label>
+            <input type="time" class="form-control" id="KapanisSaati" name="KapanisSaati" value="@Model.KapanisSaati.ToString(@"hh\:mm")" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Kaydet</button>
     </form>
 </div>

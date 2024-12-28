@@ -38,6 +38,16 @@ namespace WebProje.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<TimeSpan>("CalismaBaslangicSaati")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan>("CalismaBitisSaati")
+                        .HasColumnType("time");
+
+                    b.Property<string>("CalismaGunleri")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ProfilFotoPath")
                         .HasColumnType("nvarchar(max)");
 
@@ -48,13 +58,57 @@ namespace WebProje.Migrations
                     b.Property<long>("Telefon")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("UzmanlikAlanlari")
+                    b.HasKey("Id");
+
+                    b.ToTable("Calisanlar");
+                });
+
+            modelBuilder.Entity("WebProje.Models.CalisanIslem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("CalisanId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IslemId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CalisanId");
+
+                    b.HasIndex("IslemId");
+
+                    b.ToTable("CalisanIslemler");
+                });
+
+            modelBuilder.Entity("WebProje.Models.HomepageCard", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Calisanlar");
+                    b.ToTable("HomepageCards");
                 });
 
             modelBuilder.Entity("WebProje.Models.Islem", b =>
@@ -166,6 +220,9 @@ namespace WebProje.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("RandevuDurum")
+                        .HasColumnType("int");
+
                     b.Property<TimeSpan>("Saat")
                         .HasColumnType("time");
 
@@ -179,6 +236,25 @@ namespace WebProje.Migrations
                     b.HasIndex("IslemId");
 
                     b.ToTable("Randevular");
+                });
+
+            modelBuilder.Entity("WebProje.Models.CalisanIslem", b =>
+                {
+                    b.HasOne("WebProje.Models.Calisan", "Calisan")
+                        .WithMany("CalisanIslemler")
+                        .HasForeignKey("CalisanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebProje.Models.Islem", "Islem")
+                        .WithMany("CalisanIslemler")
+                        .HasForeignKey("IslemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Calisan");
+
+                    b.Navigation("Islem");
                 });
 
             modelBuilder.Entity("WebProje.Models.Randevu", b =>
@@ -198,6 +274,16 @@ namespace WebProje.Migrations
                     b.Navigation("Calisan");
 
                     b.Navigation("Islem");
+                });
+
+            modelBuilder.Entity("WebProje.Models.Calisan", b =>
+                {
+                    b.Navigation("CalisanIslemler");
+                });
+
+            modelBuilder.Entity("WebProje.Models.Islem", b =>
+                {
+                    b.Navigation("CalisanIslemler");
                 });
 #pragma warning restore 612, 618
         }

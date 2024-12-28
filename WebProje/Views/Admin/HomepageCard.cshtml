@@ -1,0 +1,47 @@
+﻿@model List<HomepageCard>
+
+<div class="container py-5">
+    <h2 class="mb-4 text-center">Anasayfa Kart Yönetimi</h2>
+
+    <!-- Yeni Kart Ekleme Formu -->
+    <div class="card mb-5 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title">Yeni Kart Ekle</h5>
+            <form method="post" asp-action="AddHomepageCard" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="Title" class="form-label">Başlık</label>
+                    <input type="text" name="Title" class="form-control" placeholder="Başlık giriniz" required />
+                </div>
+                <div class="mb-3">
+                    <label for="Description" class="form-label">Açıklama</label>
+                    <input type="text" name="Description" class="form-control" placeholder="Açıklama giriniz" required />
+                </div>
+                <div class="mb-3">
+                    <label for="ImageFile" class="form-label">Resim Yükle</label>
+                    <input type="file" name="ImageFile" class="form-control" accept="image/*" required />
+                </div>
+                <button type="submit" class="btn btn-success">Kart Ekle</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mevcut Kartlar Listesi -->
+    <div class="row">
+        @foreach (var card in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <img src="@card.ImagePath" class="card-img-top" alt="@card.Title" style="height: 200px; object-fit: cover;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">@card.Title</h5>
+                        <p class="card-text">@card.Description</p>
+                        <form method="post" asp-action="DeleteHomepageCard">
+                            <input type="hidden" name="id" value="@card.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm">Sil</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

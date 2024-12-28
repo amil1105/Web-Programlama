@@ -1,31 +1,56 @@
-﻿@model IEnumerable<WebProje.Models.Randevu>
+﻿@model List<WebProje.Models.Randevu>
 
 <div class="container py-5">
-    <h2>Randevularım</h2>
+    <h2 class="text-center mb-4">Randevularım</h2>
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Tarih</th>
-                <th>Saat</th>
-                <th>Çalışan</th>
-                <th>Çalışan Tel No</th>
-                <th>İşlem</th>
-                <th>Ücret</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var randevu in Model)
-            {
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-info text-center">Henüz bir randevunuz bulunmamaktadır.</div>
+    }
+    else
+    {
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
                 <tr>
-                    <td>@randevu.Tarih.ToShortDateString()</td>
-                    <td>@randevu.Saat</td>
-                    <td>@randevu.Calisan.Ad @randevu.Calisan.Soyad</td>
-                    <td>@randevu.Calisan.Telefon</td>
-                    <td>@randevu.Islem.Ad</td>
-                    <td>@randevu.Islem.Ucret ₺</td>
+                    <th>Tarih</th>
+                    <th>Saat</th>
+                    <th>Çalışan</th>
+                    <th>Çalışan Tel No</th>
+                    <th>İşlem</th>
+                    <th>Ücret</th>
+                    <th>Durum</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var randevu in Model)
+                {
+                    <tr>
+                        <td>@randevu.Tarih.ToString("dd.MM.yyyy")</td>
+                        <td>@randevu.Saat</td>
+                        <td>@randevu.Calisan.Ad @randevu.Calisan.Soyad</td>
+                        <td>@randevu.Calisan.Telefon</td>
+                        <td>@randevu.Islem.Ad</td>
+                        <td>@randevu.Islem.Ucret ₺</td>
+                        <td>
+                            @switch (randevu.RandevuDurum)
+                            {
+                                case 0:
+                                    <span class="badge bg-warning">Bekliyor</span>
+                                    break;
+                                case 1:
+                                    <span class="badge bg-success">Onaylı</span>
+                                    break;
+                                case 2:
+                                    <span class="badge bg-danger">Reddedildi</span>
+                                    break;
+                                default:
+                                    <span class="badge bg-secondary">Bilinmiyor</span>
+                                    break;
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </div>

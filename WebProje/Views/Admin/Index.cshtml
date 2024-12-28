@@ -3,53 +3,134 @@
 }
 
 <div class="container py-5">
-    <h2>Admin Panel</h2>
-    <div class="row">
+    <h2 class="text-center mb-4" style="color: #333; font-weight: bold;">Admin Panel</h2>
+    <div class="row justify-content-center">
+
+        <!-- Mağaza Ayarları -->
         <div class="col-md-4 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Mağaza Ayarları</h5>
+            <div class="card shadow-lg h-100" style="border-radius: 15px; overflow: hidden;">
+                <img src="~/uploads/settings.jpg" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Mağaza Ayarları">
+                <div class="card-body text-center">
+                    <h5 class="card-title" style="color: #b30000; font-weight: bold;">Mağaza Ayarları</h5>
                     <p class="card-text">Mağaza bilgilerini düzenleyin.</p>
-                    <a href="/Admin/MagazaAyar" class="btn btn-primary">Düzenle</a>
+                    <a href="/Admin/MagazaAyar" class="btn btn-danger w-100" style="border-radius: 20px;">Düzenle</a>
                 </div>
             </div>
         </div>
+
+        <!-- Çalışan Yönetimi -->
         <div class="col-md-4 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Çalışan Yönetimi</h5>
+            <div class="card shadow-lg h-100" style="border-radius: 15px; overflow: hidden;">
+                <img src="~/uploads/employees.jpg" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Çalışan Yönetimi">
+                <div class="card-body text-center">
+                    <h5 class="card-title" style="color: #b30000; font-weight: bold;">Çalışan Yönetimi</h5>
                     <p class="card-text">Çalışanları yönetin.</p>
-                    <a href="/Admin/CalisanListesi" class="btn btn-primary">Yönet</a>
+                    <a href="/Admin/CalisanListesi" class="btn btn-danger w-100" style="border-radius: 20px;">Yönet</a>
                 </div>
             </div>
         </div>
+
+        <!-- İşlem Yönetimi -->
         <div class="col-md-4 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">İşlem Yönetimi</h5>
+            <div class="card shadow-lg h-100" style="border-radius: 15px; overflow: hidden;">
+                <img src="~/uploads/tasks.jpg" class="card-img-top" style="height: 200px; object-fit: cover;" alt="İşlem Yönetimi">
+                <div class="card-body text-center">
+                    <h5 class="card-title" style="color: #b30000; font-weight: bold;">İşlem Yönetimi</h5>
                     <p class="card-text">İşlemleri yönetin.</p>
-                    <a href="/Admin/IslemListesi" class="btn btn-primary">Yönet</a>
+                    <a href="/Admin/IslemListesi" class="btn btn-danger w-100" style="border-radius: 20px;">Yönet</a>
                 </div>
             </div>
         </div>
+
+        <!-- Tüm Randevular -->
         <div class="col-md-4 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Tüm Randevular</h5>
+            <div class="card shadow-lg h-100" style="border-radius: 15px; overflow: hidden;">
+                <img src="~/uploads/appointments.jpg" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Tüm Randevular">
+                <div class="card-body text-center">
+                    <h5 class="card-title" style="color: #b30000; font-weight: bold;">Tüm Randevular</h5>
                     <p class="card-text">Tüm Randevuları Görüntüle.</p>
-                    <a href="/Randevu/TumRandevular" class="btn btn-primary">Görüntüle</a>
+                    <a href="/Randevu/TumRandevular" class="btn btn-danger w-100" style="border-radius: 20px;">Görüntüle</a>
                 </div>
             </div>
         </div>
+
+        <!-- Mağaza Kazanç -->
         <div class="col-md-4 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Mağaza Kazanç</h5>
-                    <p class="card-text">Mağaza Kazanç,Çalışan Kazançlarını Görüntüle.</p>
-                    <a href="/Admin/Raporlar" class="btn btn-primary">Raporlama</a>
+            <div class="card shadow-lg h-100" style="border-radius: 15px; overflow: hidden;">
+                <img src="~/uploads/reports.jpg" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Mağaza Kazanç">
+                <div class="card-body text-center">
+                    <h5 class="card-title" style="color: #b30000; font-weight: bold;">Mağaza Kazanç</h5>
+                    <p class="card-text">Mağaza Kazanç, Çalışan Kazançlarını Görüntüle.</p>
+                    <a href="/Admin/Raporlar" class="btn btn-danger w-100" style="border-radius: 20px;">Raporlama</a>
                 </div>
             </div>
         </div>
+
+        <!-- Kullanıcı Yönetimi -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-lg h-100" style="border-radius: 15px; overflow: hidden;">
+                <img src="~/uploads/users.jpg" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Kullanıcı Yönetimi">
+                <div class="card-body text-center">
+                    <h5 class="card-title" style="color: #b30000; font-weight: bold;">Kullanıcı Yönetimi</h5>
+                    <p class="card-text">Kullanıcıları Yönetin.</p>
+                    <a href="@Url.Action("KullaniciYonetimi", "Admin")" class="btn btn-danger w-100" style="border-radius: 20px;">Yönet</a>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Sayfanızı Düzenleyin -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-lg h-100" style="border-radius: 15px; overflow: hidden;">
+                <img src="~/uploads/homepage.jpg" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Sayfanızı Düzenleyin">
+                <div class="card-body text-center">
+                    <h5 class="card-title" style="color: #b30000; font-weight: bold;">Sayfanızı Düzenleyin</h5>
+                    <p class="card-text">Anasayfanızdaki resim ve içerikleri düzenleyin.</p>
+                    <a href="/Admin/HomepageCard" class="btn btn-danger w-100" style="border-radius: 20px;">Düzenle</a>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
+
+<style>
+
+
+    body {
+    background-color: #f8f9fa; /* Hafif gri arka plan */
+}
+
+.card {
+    border: none;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.05); /* Hover büyüme efekti */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #b30000; /* Kırmızı başlık */
+}
+
+.btn-danger {
+    background-color: #b30000;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #990000; /* Daha koyu kırmızı */
+}
+
+.card-img-top {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+</style>

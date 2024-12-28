@@ -9,5 +9,7 @@ namespace WebProje.Models
         public int Sure { get; set; } // Dakika cinsinden süre
         [Precision(18, 2)]
         public decimal Ucret { get; set; }
+
+        public List<CalisanIslem> CalisanIslemler { get; set; } = new List<CalisanIslem>();
     }
 }
